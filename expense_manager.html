@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker - GW Finance Manager</title>
+    <link rel="stylesheet" href="expense.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Budget Tracker</h1>
+            <nav>
+                <ul>
+                    <li><a href="Project.html">Home</a></li>
+                    <li><a href="expense_manager.html">Budget Tracker</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="budget">
+        <div class="container">
+            <h2>Set Your Budget</h2>
+            <form id="budgetForm">
+                <div>
+                    <label for="budgetAmount">Budget Amount:</label>
+                    <input type="number" id="budgetAmount" name="budgetAmount" required>
+                </div>
+                <div>
+                    <button type="submit">Set Budget</button>
+                    <button id="refreshButton">Refresh</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="budget-list">
+        <div class="container">
+            <h2>Budget Items List</h2>
+            <ul id="budgetItemsList">
+                <!-- Budget items will be dynamically added here -->
+            </ul>
+            <p>Total Budget: <span id="totalBudget">0.00</span></p>
+        </div>
+    </section>
+
+    <section class="add-item" style="display: none;">
+        <div class="container">
+            <h2>Add New Budget Item</h2>
+            <form id="itemForm">
+                <div>
+                    <label for="itemName">Item Name:</label>
+                    <input type="text" id="itemName" name="itemName" required>
+                </div>
+                <div>
+                    <label for="itemAmount">Item Amount:</label>
+                    <input type="number" id="itemAmount" name="itemAmount" required>
+                </div>
+                <div>
+                    <button type="submit">Add Budget Item</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 GW Finance Manager. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const budgetForm = document.getElementById('budgetForm');
+            const budgetItemsList = document.getElementById('budgetItemsList');
+            const totalBudgetDisplay = document.getElementById('totalBudget');
+            const budgetAmountInput = document.getElementById('budgetAmount');
+            const itemForm = document.getElementById('itemForm');
+            const addItemSection = document.querySelector('.add-item');
+            const refreshButton = document.getElementById('refreshButton');
+
+            let totalBudget = 0;
+
+            function resetBudget() {
+                budgetAmountInput.disabled = false;
+                budgetForm.querySelector('button[type="submit"]').disabled = false;
+                budgetForm.reset();
+                itemForm.reset();
+                budgetItemsList.innerHTML = '';
+                totalBudgetDisplay.textContent = '0.00';
+                addItemSection.style.display = 'none';
+                totalBudget = 0;
+            }
+
+            refreshButton.addEventListener('click', resetBudget);
+
+            budgetForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                // Get budget amount from form input
+                totalBudget = parseFloat(budgetAmountInput.value);
+
+                // Update total budget display
+                totalBudgetDisplay.textContent = totalBudget.toFixed(2);
+
+                // Disable budget form after budget is set
+                budgetAmountInput.disabled = true;
+                budgetForm.querySelector('button[type="submit"]').disabled = true;
+
+                // Show item form
+                addItemSection.style.display = 'block';
+            });
+
+            itemForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                // Get item name and amount from form inputs
+                const itemName = itemForm.itemName.value;
+                const itemAmount = parseFloat(itemForm.itemAmount.value);
+
+                // Create a new list item to display the budget item
+                const budgetItem = document.createElement('li');
+                budgetItem.textContent = itemName + ': ' + itemAmount.toFixed(2);
+
+                // Subtract item amount from total budget
+                totalBudget -= itemAmount;
+
+                // Update total budget display
+                totalBudgetDisplay.textContent = totalBudget.toFixed(2);
+
+                // Append the new budget item to the budget items list
+                budgetItemsList.appendChild(budgetItem);
+
+                // Clear form inputs
+                itemForm.reset();
+
+                // Check if budget is exceeded
+                if (totalBudget < 0) {
+                    alert('Budget exceeded!');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
